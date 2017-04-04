@@ -6,9 +6,11 @@
  */
 
 #include "hal.h"
+#include "lin.h"
 
 extern void Error_Handler(void);
-UART_HandleTypeDef huart2;
+UART_HandleTypeDef huart;
+TIM_HandleTypeDef htim;
 
 #ifdef USE_ADC
 /* ADC1 init function */
@@ -66,26 +68,26 @@ void MX_I2C1_Init(void)
 }
 #endif // USE_I2C
 
-/* TIM3 init function */
+#ifdef USE_PWM
+/* TIM3 PWM init function */
 void MX_TIM3_Init(void)
 {
-	TIM_HandleTypeDef htim3;
 	TIM_MasterConfigTypeDef sMasterConfig;
 	TIM_OC_InitTypeDef sConfigOC;
 
-	htim3.Instance = TIM3;
-	htim3.Init.Prescaler = 0;
-	htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim3.Init.Period = 0;
-	htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-	if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
+	htim.Instance = TIM3;
+	htim.Init.Prescaler = 0;
+	htim.Init.CounterMode = TIM_COUNTERMODE_UP;
+	htim.Init.Period = 0;
+	htim.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	if (HAL_TIM_PWM_Init(&htim) != HAL_OK)
 	{
 		Error_Handler();
 	}
 
 	sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
 	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-	if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+	if (HAL_TIMEx_MasterConfigSynchronization(&htim, &sMasterConfig) != HAL_OK)
 	{
 		Error_Handler();
 	}
@@ -94,33 +96,72 @@ void MX_TIM3_Init(void)
 	sConfigOC.Pulse = 0;
 	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
 	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-	if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+	if (HAL_TIM_PWM_ConfigChannel(&htim, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
 	{
 		Error_Handler();
 	}
 
-	if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+	if (HAL_TIM_PWM_ConfigChannel(&htim, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
 	{
 		Error_Handler();
 	}
 
-	HAL_TIM_MspPostInit(&htim3);
+	HAL_TIM_MspPostInit(&htim);
 
 }
+#endif // USE_PWM
+
+#ifdef USE_ENCODER
+/* TIM3 encoder init function */
+void MX_TIM3_Init(void)
+{
+	TIM_HandleTypeDef htim;
+	TIM_Encoder_InitTypeDef sConfig;
+	TIM_MasterConfigTypeDef sMasterConfig;
+
+	htim.Instance = TIM3;
+	htim.Init.Prescaler = 0;
+	htim.Init.CounterMode = TIM_COUNTERMODE_UP;
+	htim.Init.Period = 16;
+	htim.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	sConfig.EncoderMode = TIM_ENCODERMODE_TI12;
+	sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
+	sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
+	sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
+	sConfig.IC1Filter = 5;
+	sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
+	sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
+	sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
+	sConfig.IC2Filter = 5;
+	if (HAL_TIM_Encoder_Init(&htim, &sConfig) != HAL_OK)
+	{
+		Error_Handler();
+	}
+
+	sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+	if (HAL_TIMEx_MasterConfigSynchronization(&htim, &sMasterConfig) != HAL_OK)
+	{
+		Error_Handler();
+	}
+
+	HAL_TIM_Encoder_Start(&htim, TIM_CHANNEL_ALL);
+}
+#endif // USE_ENCODER
 
 /* USART2 init function */
 void MX_USART2_UART_Init(void)
 {
 
-	huart2.Instance = USART2;
-	huart2.Init.BaudRate = 19200;
-	huart2.Init.WordLength = UART_WORDLENGTH_8B;
-	huart2.Init.StopBits = UART_STOPBITS_1;
-	huart2.Init.Parity = UART_PARITY_NONE;
-	huart2.Init.Mode = UART_MODE_TX_RX;
-	huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-	huart2.Init.OverSampling = UART_OVERSAMPLING_16;
-	if (HAL_LIN_Init(&huart2, UART_LINBREAKDETECTLENGTH_11B) != HAL_OK)
+	huart.Instance = USART2;
+	huart.Init.BaudRate = LIN_BAUDRATE;
+	huart.Init.WordLength = UART_WORDLENGTH_8B;
+	huart.Init.StopBits = UART_STOPBITS_1;
+	huart.Init.Parity = UART_PARITY_NONE;
+	huart.Init.Mode = UART_MODE_TX_RX;
+	huart.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	huart.Init.OverSampling = UART_OVERSAMPLING_16;
+	if (HAL_LIN_Init(&huart, UART_LINBREAKDETECTLENGTH_11B) != HAL_OK)
 	{
 		Error_Handler();
 	}

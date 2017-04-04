@@ -33,16 +33,16 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "hal.h"
-
+#include "lin.h"
 
 void SystemClock_Config(void);
 void Error_Handler(void);
-extern UART_HandleTypeDef huart2;
-
-uint8_t transmitBuffer[32];
 
 int main(void)
 {
+	tLinFrame fr;
+	fr.addr = 2;
+	fr.msgLen = 4;
 
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 	HAL_Init();
@@ -55,7 +55,7 @@ int main(void)
 #ifdef USE_ADC
 	MX_ADC1_Init();
 #endif
-#ifdef USE_PWM
+#if defined(USE_PWM) || defined(USE_ENCODER)
 	MX_TIM3_Init();
 #endif // USE_PWM
 	MX_USART2_UART_Init();
@@ -63,11 +63,12 @@ int main(void)
 	MX_I2C1_Init();
 #endif
 
-	strcpy(transmitBuffer, "Hello\n");
-	HAL_UART_Transmit_IT(&huart2, transmitBuffer, 32);
 	while (1)
 	{
-
+		if (TIM3->CNT != fr.msg32[0]) {
+			fr.msg32[0] = TIM3->CNT;
+			LinSendFrame(&fr, 0);
+		}
 	}
 
 }

@@ -35,17 +35,11 @@
 #include "stm32f1xx_hal.h"
 
 extern void Error_Handler(void);
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
 /**
   * Initializes the Global MSP.
   */
 void HAL_MspInit(void)
 {
-  /* USER CODE BEGIN MspInit 0 */
-
-  /* USER CODE END MspInit 0 */
 
   __HAL_RCC_AFIO_CLK_ENABLE();
 
@@ -71,20 +65,15 @@ void HAL_MspInit(void)
     */
   __HAL_AFIO_REMAP_SWJ_NOJTAG();
 
-  /* USER CODE BEGIN MspInit 1 */
-
-  /* USER CODE END MspInit 1 */
 }
 
+#ifdef USE_ADC
 void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
 {
 
   GPIO_InitTypeDef GPIO_InitStruct;
   if(hadc->Instance==ADC1)
   {
-  /* USER CODE BEGIN ADC1_MspInit 0 */
-
-  /* USER CODE END ADC1_MspInit 0 */
     /* Peripheral clock enable */
     __HAL_RCC_ADC1_CLK_ENABLE();
   
@@ -128,17 +117,15 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
   /* USER CODE END ADC1_MspDeInit 1 */
 
 }
+#endif // USE_ADC
 
+#ifdef USE_I2C
 void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c)
 {
 
   GPIO_InitTypeDef GPIO_InitStruct;
   if(hi2c->Instance==I2C1)
   {
-  /* USER CODE BEGIN I2C1_MspInit 0 */
-
-  /* USER CODE END I2C1_MspInit 0 */
-  
     /**I2C1 GPIO Configuration    
     PB6     ------> I2C1_SCL
     PB7     ------> I2C1_SDA 
@@ -150,9 +137,6 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c)
 
     /* Peripheral clock enable */
     __HAL_RCC_I2C1_CLK_ENABLE();
-  /* USER CODE BEGIN I2C1_MspInit 1 */
-
-  /* USER CODE END I2C1_MspInit 1 */
   }
 
 }
@@ -162,9 +146,6 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* hi2c)
 
   if(hi2c->Instance==I2C1)
   {
-  /* USER CODE BEGIN I2C1_MspDeInit 0 */
-
-  /* USER CODE END I2C1_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_I2C1_CLK_DISABLE();
   
@@ -175,25 +156,18 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* hi2c)
     HAL_GPIO_DeInit(GPIOB, GPIO_PIN_6|GPIO_PIN_7);
 
   }
-  /* USER CODE BEGIN I2C1_MspDeInit 1 */
-
-  /* USER CODE END I2C1_MspDeInit 1 */
 
 }
+#endif // USE_I2C
 
+#ifdef USE_PWM
 void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef* htim_pwm)
 {
 
   if(htim_pwm->Instance==TIM3)
   {
-  /* USER CODE BEGIN TIM3_MspInit 0 */
-
-  /* USER CODE END TIM3_MspInit 0 */
     /* Peripheral clock enable */
     __HAL_RCC_TIM3_CLK_ENABLE();
-  /* USER CODE BEGIN TIM3_MspInit 1 */
-
-  /* USER CODE END TIM3_MspInit 1 */
   }
 
 }
@@ -242,6 +216,47 @@ void HAL_TIM_PWM_MspDeInit(TIM_HandleTypeDef* htim_pwm)
   /* USER CODE END TIM3_MspDeInit 1 */
 
 }
+#endif // USE_PWM
+
+#ifdef USE_ENCODER
+void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef* htim_encoder)
+{
+
+  GPIO_InitTypeDef GPIO_InitStruct;
+  if(htim_encoder->Instance==TIM3)
+  {
+    /* Peripheral clock enable */
+    __HAL_RCC_TIM3_CLK_ENABLE();
+
+    /**TIM3 GPIO Configuration
+    PA6     ------> TIM3_CH1
+    PA7     ------> TIM3_CH2
+    */
+    GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_7;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  }
+
+}
+
+void HAL_TIM_Encoder_MspDeInit(TIM_HandleTypeDef* htim_encoder)
+{
+
+  if(htim_encoder->Instance==TIM3)
+  {
+    /* Peripheral clock disable */
+    __HAL_RCC_TIM3_CLK_DISABLE();
+
+    /**TIM3 GPIO Configuration
+    PA6     ------> TIM3_CH1
+    PA7     ------> TIM3_CH2
+    */
+    HAL_GPIO_DeInit(GPIOA, GPIO_PIN_6|GPIO_PIN_7);
+
+  }
+}
+#endif // USE_ENCODER
 
 void HAL_UART_MspInit(UART_HandleTypeDef* huart)
 {
@@ -272,9 +287,6 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     /* Peripheral interrupt init */
     HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(USART2_IRQn);
-  /* USER CODE BEGIN USART2_MspInit 1 */
-
-  /* USER CODE END USART2_MspInit 1 */
   }
 
 }
@@ -284,9 +296,6 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
 
   if(huart->Instance==USART2)
   {
-  /* USER CODE BEGIN USART2_MspDeInit 0 */
-
-  /* USER CODE END USART2_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_USART2_CLK_DISABLE();
   
@@ -300,22 +309,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
     HAL_NVIC_DisableIRQ(USART2_IRQn);
 
   }
-  /* USER CODE BEGIN USART2_MspDeInit 1 */
-
-  /* USER CODE END USART2_MspDeInit 1 */
-
 }
 
-/* USER CODE BEGIN 1 */
-
-/* USER CODE END 1 */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
