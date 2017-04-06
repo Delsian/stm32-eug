@@ -11,12 +11,11 @@
 #include "stm32f0xx_hal.h"
 
 void MX_GPIO_Init(void);
-void MX_ADC1_Init(void);
-void MX_TIM3_Init(void);
-void MX_USART2_UART_Init(void);
+void MX_TIM_Init(void);
+void MX_UART_Init(void);
 void MX_I2C1_Init(void);
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
-
+void SystemClock_Config(void);
 
 
 #endif /* HAL_H_ */

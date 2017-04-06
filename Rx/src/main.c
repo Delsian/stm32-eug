@@ -38,6 +38,12 @@
 void SystemClock_Config(void);
 void Error_Handler(void);
 
+static void delay(uint32_t ticks)
+{
+	uint32_t newtick = HAL_GetTick() + ticks;
+	while(HAL_GetTick() < newtick) {}
+}
+
 int main(void)
 {
 	tLinFrame fr;
@@ -67,8 +73,9 @@ int main(void)
 	{
 		if (TIM3->CNT != fr.msg32[0]) {
 			fr.msg32[0] = TIM3->CNT;
-			LinSendFrame(&fr, 0);
 		}
+		delay(20);
+		LinSendFrame(&fr, 0);
 	}
 
 }

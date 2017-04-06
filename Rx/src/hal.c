@@ -200,9 +200,10 @@ void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : LIN_WAKE_Pin LIN_SLP_Pin */
   GPIO_InitStruct.Pin = LIN_WAKE_Pin|LIN_SLP_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_WritePin(GPIOA,LIN_SLP_Pin,GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOA,LIN_WAKE_Pin,GPIO_PIN_SET);
 
   /*Configure GPIO pins : S1_Pin S2_Pin S3_Pin S4_Pin
                            TP2_Pin */
