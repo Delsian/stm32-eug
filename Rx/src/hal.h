@@ -8,7 +8,7 @@
 #ifndef HAL_H_
 #define HAL_H_
 
-#include "stm32f0xx_hal.h"
+#include "stm32f1xx_hal.h"
 
 void MX_GPIO_Init(void);
 void MX_ADC1_Init(void);

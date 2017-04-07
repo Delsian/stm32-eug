@@ -74,8 +74,10 @@ int main(void)
 		if (TIM3->CNT != fr.msg32[0]) {
 			fr.msg32[0] = TIM3->CNT;
 		}
-		delay(20);
+		delay(50);
 		LinSendFrame(&fr, 0);
+		fr.addr++;
+		fr.addr &= 7;
 	}
 
 }
