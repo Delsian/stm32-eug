@@ -10,6 +10,9 @@
 
 #include "stm32f0xx_hal.h"
 
+#define LIN_TX GPIO_PIN_2
+#define LIN_RX GPIO_PIN_3
+#define LIN_SLEEP GPIO_PIN_5
 void MX_GPIO_Init(void);
 void MX_TIM_Init(void);
 void MX_UART_Init(void);

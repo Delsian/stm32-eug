@@ -42,5 +42,10 @@ void assert_failed(uint8_t* file, uint32_t line)
 
 #endif
 
+void delay_ms(uint32_t ticks)
+{
+	uint32_t newtick = HAL_GetTick() + ticks;
+	while(HAL_GetTick() < newtick) {}
+}
 
 

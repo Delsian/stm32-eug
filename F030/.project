@@ -24,11 +24,4 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 		<nature>org.eclipse.cdt.core.ccnature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>LIN</name>
-			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Rx/LIN</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>

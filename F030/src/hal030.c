@@ -10,6 +10,7 @@
 
 UART_HandleTypeDef huart;
 TIM_HandleTypeDef htim;
+void Error_Handler(void);
 
 /* USART1 init function */
 void MX_UART_Init(void)
@@ -86,11 +87,11 @@ void MX_GPIO_Init(void)
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 
 	/* PA5 - LIN enable */
-	GPIO_InitStruct.Pin = GPIO_PIN_5;
+	GPIO_InitStruct.Pin = LIN_SLEEP;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_5,GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA,LIN_SLEEP,GPIO_PIN_SET);
 }
 
 

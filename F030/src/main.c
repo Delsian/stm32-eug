@@ -33,15 +33,19 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "hal.h"
+#include "lin.h"
 
 /* Private variables ---------------------------------------------------------*/
 extern TIM_HandleTypeDef htim;
 extern UART_HandleTypeDef huart;
 
-void Error_Handler(void);
+void delay_ms(uint32_t ticks);
 
 int main(void)
 {
+	tLinFrame fr;
+	fr.addr = 2;
+	fr.msgLen = 2;
 
     HAL_Init();
 
@@ -57,15 +61,13 @@ int main(void)
 
   while (1)
   {
-
-
+	  if (LinGetFrame(&fr) == NO_ERROR) {
+		  delay_ms(10);
+		  LinSendFrame(&fr, 0);
+	  }
   }
 
 }
-
-/* USER CODE BEGIN 4 */
-
-/* USER CODE END 4 */
 
 
 

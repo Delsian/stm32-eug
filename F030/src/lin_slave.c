@@ -10,11 +10,6 @@
 
 extern UART_HandleTypeDef huart;
 
-void USART2_IRQHandler(void)
-{
-  HAL_UART_IRQHandler(&huart);
-}
-
 /* Create the Lin ID parity */
 #define BIT(data,shift) ((addr&(1<<shift))>>shift)
 static uint8_t LinAddrParity(uint8_t addr)
@@ -40,14 +35,23 @@ t_lin_error LinSendFrame(tLinFrame* Frame, uint8_t proto)
 	while (HAL_UART_GetState(&huart) != HAL_UART_STATE_READY) {}
 
 	t_lin_error err = NO_ERROR;
-	HAL_LIN_SendBreak(&huart);
-	tx_buf[0] = 0x55; // Sync byte
-	tx_buf[1] = (Frame->addr & 0x3f) | LinAddrParity(Frame->addr);
+	tx_buf[0] = (Frame->addr & 0x3f) | LinAddrParity(Frame->addr);
 	if (Frame->msgLen>0)
-		memcpy(&(tx_buf[2]),Frame->message, Frame->msgLen);
-	tx_buf[Frame->msgLen+2] = LinDataChecksum(Frame->message, Frame->msgLen,(proto==1) ? 0:tx_buf[1]);
-	HAL_UART_Transmit_IT(&huart, tx_buf, Frame->msgLen+3);
+		memcpy(&(tx_buf[1]),Frame->message, Frame->msgLen);
+	tx_buf[Frame->msgLen+1] = LinDataChecksum(Frame->message, Frame->msgLen,(proto==1) ? 0:tx_buf[0]);
+	HAL_UART_Transmit_IT(&huart, tx_buf, Frame->msgLen+2);
 
+	return err;
+}
+
+t_lin_error LinGetFrame(tLinFrame* Frame)
+{
+	t_lin_error err = NO_ERROR;
+	uint8_t rxbyte;
+	while(1) {
+		if (HAL_UART_Receive(&huart,&rxbyte,1,HAL_MAX_DELAY) == HAL_OK)
+			break;
+	}
 	return err;
 }
 
