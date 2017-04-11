@@ -48,7 +48,7 @@ int main(void)
 {
 	tLinFrame fr;
 	fr.addr = 2;
-	fr.msgLen = 4;
+	fr.msgLen = 2;
 
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 	HAL_Init();
@@ -71,13 +71,13 @@ int main(void)
 
 	while (1)
 	{
-		if (TIM3->CNT != fr.msg32[0]) {
-			fr.msg32[0] = TIM3->CNT;
+		if (TIM3->CNT != fr.msg16) {
+			fr.msg16 = TIM3->CNT & 0xFFFF;
+			LinSendFrame(&fr, 0);
+			fr.addr++;
+			fr.addr &= 3;
 		}
-		delay(50);
-		LinSendFrame(&fr, 0);
-		fr.addr++;
-		fr.addr &= 7;
+		//delay(50);
 	}
 
 }

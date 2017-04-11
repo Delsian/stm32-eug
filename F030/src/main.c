@@ -45,7 +45,6 @@ int main(void)
 {
 	tLinFrame fr;
 	fr.addr = 2;
-	fr.msgLen = 2;
 
     HAL_Init();
 
@@ -61,9 +60,9 @@ int main(void)
 
   while (1)
   {
-	  if (LinGetFrame(&fr) == NO_ERROR) {
-		  delay_ms(10);
-		  LinSendFrame(&fr, 0);
+	  if (LinGetFrame(&fr) == NO_ERROR)
+	  {
+		  LinSendResp(&fr);
 	  }
   }
 

@@ -122,8 +122,8 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
     /* Peripheral interrupt init */
-    HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(USART1_IRQn);
+    //HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);
+    //HAL_NVIC_EnableIRQ(USART1_IRQn);
   }
 
 }
@@ -138,7 +138,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
     HAL_GPIO_DeInit(GPIOA, LIN_TX|LIN_RX);
 
     /* Peripheral interrupt DeInit*/
-    HAL_NVIC_DisableIRQ(USART1_IRQn);
+    //HAL_NVIC_DisableIRQ(USART1_IRQn);
   }
 
 }

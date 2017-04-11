@@ -29,29 +29,71 @@ static uint8_t LinDataChecksum(const uint8_t* message, char nBytes, uint16_t sum
     return (~sum);
 }
 
-t_lin_error LinSendFrame(tLinFrame* Frame, uint8_t proto)
+t_lin_error LinSendResp(tLinFrame* Frame)
 {
-	static uint8_t tx_buf[12];
 	while (HAL_UART_GetState(&huart) != HAL_UART_STATE_READY) {}
 
 	t_lin_error err = NO_ERROR;
-	tx_buf[0] = (Frame->addr & 0x3f) | LinAddrParity(Frame->addr);
-	if (Frame->msgLen>0)
-		memcpy(&(tx_buf[1]),Frame->message, Frame->msgLen);
-	tx_buf[Frame->msgLen+1] = LinDataChecksum(Frame->message, Frame->msgLen,(proto==1) ? 0:tx_buf[0]);
-	HAL_UART_Transmit_IT(&huart, tx_buf, Frame->msgLen+2);
+
+	HAL_UART_Transmit(&huart, Frame->message, 2, HAL_MAX_DELAY);
 
 	return err;
 }
+
+typedef enum {
+	START,
+	WAIT_FOR_55,
+	ADDR,
+	DATA1,
+	DATA2,
+	MSG_CRC,
+	MSG_OK
+} tRxState;
 
 t_lin_error LinGetFrame(tLinFrame* Frame)
 {
+	tRxState state = START;
 	t_lin_error err = NO_ERROR;
 	uint8_t rxbyte;
-	while(1) {
-		if (HAL_UART_Receive(&huart,&rxbyte,1,HAL_MAX_DELAY) == HAL_OK)
-			break;
+	while(state != MSG_OK) {
+		HAL_StatusTypeDef status = HAL_UART_Receive(&huart,&rxbyte,1,HAL_MAX_DELAY);
+		if (status == HAL_OK) {
+			switch (state) {
+			case START:
+				if (rxbyte == 0 && (huart.Instance->ISR && USART_ISR_FE_Msk))
+					state = WAIT_FOR_55;
+				break;
+			case WAIT_FOR_55:
+				if (rxbyte == 0x55)
+					state = ADDR;
+				break;
+			case ADDR:
+				Frame->addr = rxbyte & 0x3F;
+				if ((LinAddrParity(Frame->addr)&0xC0) == (rxbyte&0xC0))
+				{
+					// Chk addr
+					state = DATA1;
+				}
+				else
+				{
+					state = START;
+				}
+				break;
+			case DATA1:
+				Frame->message[0] = rxbyte;
+				state = DATA2;
+				break;
+			case DATA2:
+				Frame->message[1] = rxbyte;
+				state = MSG_CRC;
+				break;
+			case MSG_CRC:
+				state = MSG_OK;
+				break;
+			default:
+				break;
+			}
+		}
 	}
 	return err;
 }
-

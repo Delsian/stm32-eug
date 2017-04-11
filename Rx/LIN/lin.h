@@ -57,8 +57,8 @@ typedef struct
 {
 	uint8_t addr;
 	union {
-		uint8_t message[8];
-		uint32_t msg32[2];
+		uint8_t message[2];
+		uint16_t msg16;
 	};
 	uint8_t msgLen;
 } tLinFrame;

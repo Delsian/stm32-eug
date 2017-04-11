@@ -57,10 +57,10 @@ typedef struct
 {
 	uint8_t addr;
 	union {
-		uint8_t message[8];
-		uint32_t msg32[2];
+		uint8_t message[2];
+		uint16_t msg16;
 	};
-	uint8_t msgLen;
+	// msgLen always 2
 } tLinFrame;
 
 //=======
@@ -68,10 +68,31 @@ void LinInit(void);
 void LinSendWakeUpSignal(void);
 typedef void (*LinFrameCB)(tLinFrame* Frame);
 
-// Master
-t_lin_error LinSendFrame(tLinFrame* Frame, uint8_t proto);
-// Slave
+t_lin_error LinSendResp(tLinFrame* Frame);
 t_lin_error LinGetFrame(tLinFrame* Frame);
 
+//=== Bricks
+
+// Inputs
+#ifdef BRICK_ENCODER
+#define BRICK_ADDR 2
+#endif
+#ifdef BRICK_BUTTON
+#define BRICK_ADDR 3
+#endif
+#ifdef BRICK_RANGE
+#define BRICK_ADDR 4
+#endif
+
+// Outputs
+#ifdef BRICK_MOTOR
+#define BRICK_ADDR 20
+#endif
+#ifdef BRICK_STEPPER
+#define BRICK_ADDR 21
+#endif
+#ifdef BRICK_LIGHT
+#define BRICK_ADDR 22
+#endif
 
 #endif /* LIN_H_ */
