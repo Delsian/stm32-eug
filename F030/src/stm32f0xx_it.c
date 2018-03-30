@@ -35,9 +35,6 @@
 #include "stm32f0xx.h"
 #include "stm32f0xx_it.h"
 
-/* External variables --------------------------------------------------------*/
-extern UART_HandleTypeDef huart;
-
 /******************************************************************************/
 /*            Cortex-M0 Processor Interruption and Exception Handlers         */ 
 /******************************************************************************/
@@ -104,18 +101,6 @@ void SysTick_Handler(void)
 {
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
-}
-
-/******************************************************************************/
-/* STM32F0xx Peripheral Interrupt Handlers                                    */
-/* Add here the Interrupt Handlers for the used peripherals.                  */
-/* For the available peripheral interrupt handler names,                      */
-/* please refer to the startup file (startup_stm32f0xx.s).                    */
-/******************************************************************************/
-
-void USART1_IRQHandler(void)
-{
-  HAL_UART_IRQHandler(&huart);
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

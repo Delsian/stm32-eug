@@ -33,18 +33,20 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "hal.h"
-#include "lin.h"
-
-/* Private variables ---------------------------------------------------------*/
-extern TIM_HandleTypeDef htim;
-extern UART_HandleTypeDef huart;
+#include "board.h"
 
 void delay_ms(uint32_t ticks);
 
+#define STATE_BUTTON 1
+#define STATE_ENC1 2
+#define LOOP_COUNT 0x8
+
 int main(void)
 {
-	tLinFrame fr;
-	fr.addr = 2;
+	uint16_t counter = 0;
+	uint8_t brightness = 5;
+
+	uint8_t old_state = 0;
 
     HAL_Init();
 
@@ -53,17 +55,44 @@ int main(void)
 
     /* Initialize all configured peripherals */
     MX_GPIO_Init();
-    MX_UART_Init();
-#if defined(USE_PWM) || defined(USE_ENCODER)
-	MX_TIM_Init();
-#endif // USE_PWM
+    MX_ADC_Init();
 
   while (1)
   {
-	  if (LinGetFrame(&fr) == NO_ERROR)
-	  {
-		  LinSendResp(&fr);
+	  counter++;
+	  if (counter& LOOP_COUNT) {
+		  HAL_GPIO_WritePin(GPIOA, LED_B, GPIO_PIN_SET);
 	  }
+	  if ((counter&(LOOP_COUNT-1)) > brightness) {
+		  HAL_GPIO_WritePin(GPIOA, LED_B, GPIO_PIN_RESET);
+	  }
+
+	  if(HAL_GPIO_ReadPin(GPIOA, ENCB)==0 && !(old_state&STATE_BUTTON)) {
+		  // Button press
+		  old_state |= STATE_BUTTON;
+		  brightness++;
+	  }
+	  if(HAL_GPIO_ReadPin(GPIOA, ENCB)) {
+		  // Release
+		  old_state &= ~STATE_BUTTON;
+	  }
+
+	  // Encoder
+	  if(HAL_GPIO_ReadPin(GPIOA, ENC1)) {
+		  old_state &= ~STATE_ENC1;
+	  } else {
+		  if(!(old_state&STATE_ENC1)) {
+			  old_state |= STATE_ENC1;
+			  if (HAL_GPIO_ReadPin(GPIOB, ENC2)) {
+				  brightness++;
+				  if (brightness>LOOP_COUNT) brightness=LOOP_COUNT;
+			  } else {
+				  if (brightness)
+					  brightness--;
+			  }
+		  }
+	  }
+
   }
 
 }

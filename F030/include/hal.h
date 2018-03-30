@@ -10,13 +10,8 @@
 
 #include "stm32f0xx_hal.h"
 
-#define LIN_TX GPIO_PIN_2
-#define LIN_RX GPIO_PIN_3
-#define LIN_SLEEP GPIO_PIN_5
 void MX_GPIO_Init(void);
-void MX_TIM_Init(void);
-void MX_UART_Init(void);
-void MX_I2C1_Init(void);
+void MX_ADC_Init(void);
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 void SystemClock_Config(void);
 
