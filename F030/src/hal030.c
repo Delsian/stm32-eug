@@ -44,11 +44,16 @@ void MX_GPIO_Init(void)
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+	GPIO_InitStruct.Pin = AIN0;
+	GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
 
 /* ADC init function */
 void MX_ADC_Init(void)
 {
+  __HAL_RCC_ADC1_CLK_ENABLE();
 
   ADC_ChannelConfTypeDef sConfig;
 
@@ -83,6 +88,8 @@ void MX_ADC_Init(void)
     Error_Handler();
   }
 
+  HAL_NVIC_SetPriority(ADC1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(ADC1_IRQn);
 }
 
 /** System Clock Configuration

@@ -9,6 +9,7 @@
 #define BOARD_H_
 
 // Port A
+#define AIN0 GPIO_PIN_0
 #define LED_R GPIO_PIN_2
 #define LED_G GPIO_PIN_1
 #define LED_B GPIO_PIN_3
